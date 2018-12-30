@@ -2,6 +2,8 @@
 
 [Daily coding problem](https://www.dailycodingproblem.com/) solutions, organized by `<projectRoot>/year/month/day.ext`.
 
+![](https://apps.caseywebb.xyz/dcp-badger?repo=caseyWebb/dcp)
+
 ## Usage
 
 To run, use the respective language REPL.
