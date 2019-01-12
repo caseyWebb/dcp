@@ -42,7 +42,7 @@
  * The name of a directory or sub-directory will not contain a period.
  */
 
-export {}
+import * as assert from 'assert'
 
 function isFile(fd: string) {
   return fd.includes('.')
@@ -59,18 +59,24 @@ class Directory {
 
   public toJS(): { [k: string]: any } {
     return {
-      [this.name]: this.contents.map((item) => {
-        if (item instanceof File) {
-          return item.name
-        } else {
-          return item.toJS()
-        }
-      })
+      [this.name]: this.contents.map((item) => 
+        item instanceof Directory
+          ? item.toJS()
+          : item.name
+      )
     }
   }
 
-  // public getLongestPathname(): string {
-  // }
+  public getLongestPathname(): number {
+    // +1 for "/"
+    return this.name.length + 1 + Math.max(
+      ...this.contents.map((item) =>
+        item instanceof Directory
+          ? item.getLongestPathname()
+          : item.name.length
+      )
+    )
+  }
 
   public static fromString(str: string): Directory {
     const [dirname, ...lines] = str.split('\n').map((line) => line.replace(/^\t/, ''))
@@ -97,6 +103,8 @@ class File {
   constructor(public name: string) {}
 }
 
-export const dir = Directory.fromString('dir\n\tsubdir1\n\t\tfile1.ext\n\t\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext')
+const dir = Directory.fromString('dir\n\tsubdir1\n\t\tfile1.ext\n\t\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext')
 
-console.log(JSON.stringify(dir.toJS(), null, 2))
+// console.log(JSON.stringify(dir.toJS(), null, 2))
+
+assert.equal(dir.getLongestPathname(), 32)
